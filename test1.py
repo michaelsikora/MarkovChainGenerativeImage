@@ -10,7 +10,7 @@
 import cv2
 import numpy as np
 import random
-
+import csv
 
 def get_next_state(current):
     evt = random.randint(1, 100)
@@ -41,28 +41,28 @@ def update_image():
             markov[ii:ii+pixel_group_size, jj:jj+pixel_group_size] = states[next, :]
 
 
+# read in state space from csv
+reader = csv.reader(open("states.csv", "r"), delimiter=',')
+x = list(reader)
+states = np.array(x).astype("int")
+
+# read in transition matrix from csv
+reader = csv.reader(open("transitionMatrix.csv", "r"), delimiter=',')
+x = list(reader)
+transitionMatrix = np.array(x).astype("float")
+
 # image dimensions
-height = 2000
-width = 2000
+height = 1400
+width = 1400
 pixel_group_size = 1
 
-states = np.array([[255, 130, 0], [0, 0, 0], [0, 0, 130], [96, 239, 211],
-                   [155, 0, 10], [100, 15, 5], [255, 255, 255], [150, 150, 150]])
-transitionMatrix = np.array([[0.5, 0.4, 0.1, 0, 0, 0, 0, 0],
-                             [0.5, 0.2, 0.3, 0, 0, 0, 0, 0],
-                             [0.1, 0.6, 0.2, 0.1, 0, 0, 0, 0],
-                             [0, 0.2, 0.2, 0.1, 0.5, 0, 0, 0],
-                             [0, 0.2, 0.2, 0, 0, 0.6, 0, 0],
-                             [0, 0.2, 0.2, 0.1, 0, 0, 0.5, 0],
-                             [0, 0, 0, 0, 0.2, 0, 0, 0.8],
-                             [0, 0, 0, 0, 0, 0, 0, 1]])
-
+tmax = 50  # number of transitions
 markov = np.zeros((height, width, 3), np.uint8)  # generated image space
 markov[:, :] = states[0, :]  # initial state
 
+
 # RUN TRANSITIONS
 cv2.namedWindow('main')
-tmax = 10  # number of transitions
 if ((height+width)/pixel_group_size*tmax) < 2500:  # if small enough run as a sequence
     for x in range(0, tmax):
         update_image()
@@ -76,6 +76,6 @@ else:  # determine matrix result after run and generate last image
     update_image()
 
 cv2.imshow('main', markov)  # show last image
-cv2.imwrite('test1.png', markov)  # save last image
+cv2.imwrite('test2.png', markov)  # save last image
 cv2.waitKey(0)  # stall program
 cv2.destroyAllWindows()

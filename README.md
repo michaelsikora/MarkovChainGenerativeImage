@@ -6,5 +6,7 @@ Python program to generate an image from a Markov Chain Model
 Each pixel's color is a state of a markov chain that only depends
 on the current color of that pixel
 
+The colors are in BGR
+
 Environment: 
 Python 3.7, Windows 10, PyCharm IDE
